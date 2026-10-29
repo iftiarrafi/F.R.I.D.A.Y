@@ -1,4 +1,4 @@
-# ✳ F.R.I.D.A.Y — Agentic AI Assistant & Document Intelligence
+# ✳ F.R.I.D.A.Y — Agentic AI Assistant with RAG
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white" alt="Python Version" />
