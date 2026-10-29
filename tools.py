@@ -32,50 +32,60 @@ def ingest_rag_document(file_path):
     vector_store.save_local(DB_PATH)
     
 def get_retriever():
-    DB_PATH ="faiss_db"
+    DB_PATH = "faiss_db"
+
+    if not (
+        os.path.exists(os.path.join(DB_PATH, "index.faiss"))
+        and os.path.exists(os.path.join(DB_PATH, "index.pkl"))
+    ):
+        return None
+
     vector_store = FAISS.load_local(
         folder_path=DB_PATH,
         embeddings=embeddings,
         allow_dangerous_deserialization=True
     )
-    retriever = vector_store.as_retriever(
-        search_type ="similarity",
-        search_kwargs={"k":4}
+
+    return vector_store.as_retriever(
+        search_type="similarity",
+        search_kwargs={"k": 4}
     )
-    return retriever
 
-@tool()
-def rag_tool(query:str) -> str :
+@tool
+def rag_tool(query: str) -> str:
     """
-    Retrieve relevant information from the PDF document.
-
-    Use this tool when the user asks factual or conceptual questions
-    that may be answered using the stored PDF documents.
-
-    Args:
-        query: The question or search query used to retrieve PDF content.
+    Retrieve relevant information from an uploaded PDF document.
+    Use this tool for questions about PDF content.
     """
-    
-    retriever = get_retriever() # retriever object
-    documents = retriever.invoke(query)   
-    
-    if not documents :
-        return "No relevant information was found in the PDF."
+    try:
+        retriever = get_retriever()
 
-    formatted_documents = []
-    
-    for index , document in enumerate(documents , start=1):
-        source = document.metadata.get("source" , "unknown source")
-        page = document.metadata.get("page" , "unknown page")
-        
-        formatted_documents.append(
-            f"Document {index}\n"
-            f"Source: {source}\n"
-            f"Page: {page}\n"
-            f"Content: {document.page_content}\n"
-        )
+        if retriever is None:
+            return (
+                "No PDF has been indexed yet. "
+                "Please upload a PDF before asking document questions."
+            )
 
-    return "\n\n".join(formatted_documents)
+        documents = retriever.invoke(query)
+
+        if not documents:
+            return "No relevant information was found in the PDF."
+
+        formatted_documents = []
+
+        for index, document in enumerate(documents, start=1):
+            page = document.metadata.get("page", "unknown")
+
+            formatted_documents.append(
+                f"Document {index}\n"
+                f"Page: {page}\n"
+                f"Content: {document.page_content}"
+            )
+
+        return "\n\n".join(formatted_documents)
+
+    except Exception as error:
+        return f"PDF retrieval failed: {error}"
     
 #------ RAG Tool -------
 
