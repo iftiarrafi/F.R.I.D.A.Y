@@ -1,7 +1,7 @@
 # F.R.I.D.A.Y — Agentic AI Assistant with RAG
 
 <p align="center">
-  <img src="images/architecture.png" alt="F.R.I.D.A.Y System Architecture" width="100%" />
+  <img src="images/intro.png" alt="F.R.I.D.A.Y System Intro" width="100%" />
 </p>
 
 <p align="center">
