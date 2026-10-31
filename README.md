@@ -1,197 +1,282 @@
 # F.R.I.D.A.Y — Agentic AI Assistant with RAG
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white" alt="Python Version" />
-  <img src="https://img.shields.io/badge/LangGraph-1.2.0-orange?logo=langchain&logoColor=white" alt="LangGraph" />
-  <img src="https://img.shields.io/badge/Streamlit-1.58.0-red?logo=streamlit&logoColor=white" alt="Streamlit" />
-  <img src="https://img.shields.io/badge/Groq-Fast%20Inference-green?logo=lightning&logoColor=white" alt="Groq" />
-  <img src="https://img.shields.io/badge/Vector%20Store-FAISS-blueviolet" alt="FAISS" />
-  <img src="https://img.shields.io/badge/Embeddings-Gemini-4285F4?logo=google&logoColor=white" alt="Google Gemini" />
+  <img src="images/architecture.png" alt="F.R.I.D.A.Y System Architecture" width="100%" />
 </p>
 
-**F.R.I.D.A.Y** is an intelligent, multi-tool autonomous AI assistant engineered with **LangGraph**, **Groq LLM inference**, and **Streamlit**. It integrates Retrieval-Augmented Generation (RAG) over uploaded documents, live web search, real-time stock quotes, global weather telemetry, mathematical calculation, and persistent conversation memory across independent chat threads.
-
----
-
-## 🎥 Video Demonstration
-
-Click the preview below to watch the full walkthrough and live demonstration on YouTube:
-
 <p align="center">
-  <a href="https://youtu.be/xmeE2yC3Qz4" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.youtube.com/vi/xmeE2yC3Qz4/maxresdefault.jpg" alt="F.R.I.D.A.Y Live Demo Video" width="90%" style="border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);" />
-  </a>
+  An agentic AI assistant built with Python, LangGraph, LangChain, Groq, and Streamlit.
   <br />
-  <a href="https://youtu.be/xmeE2yC3Qz4" target="_blank" rel="noopener noreferrer">
-    <b>▶️ Watch the Demo on YouTube: https://youtu.be/xmeE2yC3Qz4</b>
-  </a>
+  Chat naturally, ask questions about uploaded PDFs, search the web, check weather and stock prices, and perform calculations.
 </p>
 
-<details>
-<summary><b>Click to expand Markdown / HTML embed code</b></summary>
-
-```markdown
-<!-- Standard Markdown Image Link -->
-[![F.R.I.D.A.Y Demo](https://img.youtube.com/vi/xmeE2yC3Qz4/maxresdefault.jpg)](https://youtu.be/xmeE2yC3Qz4)
-
-<!-- Styled HTML Image Link -->
 <p align="center">
-  <a href="https://youtu.be/xmeE2yC3Qz4" target="_blank">
-    <img src="https://img.youtube.com/vi/xmeE2yC3Qz4/maxresdefault.jpg" alt="F.R.I.D.A.Y Demo Video" width="85%" style="border-radius: 10px;">
-  </a>
+  <a href="https://youtu.be/c8cNnl3ZWiA">▶ Watch Demo</a>
 </p>
-```
-
-</details>
 
 ---
 
-## ✨ Key Features
+## Overview
 
-- **🧠 Autonomous Agentic Reasoning (ReAct Pattern)**: Powered by `LangGraph` and `ChatGroq`, dynamically evaluating whether to answer directly or select and execute the optimal specialized tool.
-- **📄 Document RAG with PDF Upload**: 
-  - Drag-and-drop PDF upload directly in the chat interface.
-  - Text extraction via `PyPDFLoader` and overlapping chunking using `RecursiveCharacterTextSplitter`.
-  - Dense semantic vector embeddings powered by Google's `gemini-embedding-2-preview`.
-  - Local vector similarity search using `FAISS` with citation formatting.
-- **🌐 Real-Time Web Search**: Advanced internet queries via `TavilySearch` for up-to-date events, breaking news, and online facts.
-- **📈 Live Stock Market Quotes**: Instant financial price lookups for tickers (e.g., `AAPL`, `TSLA`, `MSFT`) via Alpha Vantage API.
-- **🌤️ Global Meteorological Intelligence**: Real-time two-stage weather search (Geocoding API to resolve coordinates + Weather API) via OpenWeatherMap, reporting temperature, feels-like, humidity, wind speed, atmospheric pressure, and visibility.
-- **🧮 Secure Mathematical Computation**: Safe math expression evaluator supporting trigonometry, roots, rounding, and arbitrary formulas.
-- **💾 Persistent Multi-Session Memory**: SQLite checkpointer (`SqliteSaver`) preserves past chat sessions, conversation threads, and context states even after server restarts.
-- **🎨 Sleek, Modern User Interface**: Clean Streamlit UI with conversation sidebar, live tool call status chips (`st.status`), and smooth token streaming.
+**F.R.I.D.A.Y** is an agentic AI assistant that combines conversational AI with tool calling and Retrieval-Augmented Generation (RAG).
 
----
+Instead of relying only on an LLM's internal knowledge, F.R.I.D.A.Y can decide when to use external tools, retrieve information from uploaded PDF documents, and maintain conversation history across sessions.
 
-## 🏗️ Architecture & Workflow
+The application uses **LangGraph** to manage the agent workflow, **Groq** to power the language model, and **Streamlit** to provide an interactive chat interface.
 
-```mermaid
+## Features
 
----
+- **Agentic Conversations:** Interact with an LLM that can decide whether to answer directly or invoke an appropriate tool.
+- **PDF-based RAG:** Upload PDF documents and ask questions based on their contents.
+- **Semantic Retrieval:** Retrieve relevant document chunks using embeddings and FAISS vector search.
+- **Web Search:** Search the web for current events and information using Tavily.
+- **Weather Information:** Retrieve current weather conditions for a given location.
+- **Stock Price Lookup:** Fetch stock market quotes using Alpha Vantage.
+- **Calculator:** Perform mathematical calculations through a dedicated tool.
+- **Persistent Chat History:** Save and restore conversations using LangGraph's SQLite checkpointing.
+- **Streaming Responses:** Display assistant responses progressively in the Streamlit interface.
+- **Chat History Sidebar:** Navigate previous conversations and start new chats.
 
-## 📁 Project Structure
+## Architecture & Workflow
+
+F.R.I.D.A.Y follows a graph-based agent architecture. The LLM acts as the decision-making component, while LangGraph manages tool execution and the conversation flow.
+
+### System Architecture
+
+<p align="center">
+  <img src="images/diagram.png" alt="F.R.I.D.A.Y Agent Architecture Diagram" width="100%" />
+</p>
+
+### Agent Workflow
+
+1. **User Input:** The user sends a message through the Streamlit chat interface.
+2. **Conversation State:** The message is passed to the LangGraph workflow along with the conversation's thread ID.
+3. **LLM Decision:** The Groq-powered LLM analyzes the conversation and decides whether it can answer directly or needs a tool.
+4. **Tool Execution:** If a tool is required, LangGraph routes execution to the tool node.
+5. **Tool Response:** The tool result is returned to the LLM, which processes the result and generates a response.
+6. **Final Response:** The assistant's response is streamed to the user.
+7. **Persistence:** SQLite checkpointing stores conversation state so previous chats can be restored.
+
+### PDF Ingestion & Retrieval Workflow
+
+The PDF RAG pipeline allows the assistant to answer questions using uploaded documents.
+
+1. The user uploads a PDF through the Streamlit interface.
+2. The application temporarily stores the uploaded file.
+3. The backend processes the PDF and extracts its text.
+4. The extracted content is prepared and converted into vector embeddings.
+5. FAISS stores the document vectors for similarity-based retrieval.
+6. When the user asks a document-related question, the agent invokes the RAG tool.
+7. Relevant document content is retrieved and passed to the LLM.
+8. The LLM generates a response grounded in the retrieved context.
+
+## Tools
+
+F.R.I.D.A.Y currently supports the following tools:
+
+| Tool | Purpose | Integration |
+|---|---|---|
+| `rag_tool` | Retrieve information from uploaded PDFs | FAISS / Embeddings |
+| `search_tool` | Search the web for recent information | Tavily |
+| `get_current_weather` | Retrieve current weather information | OpenWeatherMap |
+| `get_stock_price` | Fetch stock market quotes | Alpha Vantage |
+| `calculator` | Perform mathematical calculations | Python |
+
+The agent selects tools based on the user's request. For example, a question about an uploaded PDF triggers document retrieval, while a request for current weather triggers the weather tool.
+
+## Tech Stack
+
+| Category | Technologies |
+|---|---|
+| Language | Python |
+| LLM | Groq — `openai/gpt-oss-120b` |
+| Agent Framework | LangGraph |
+| LLM Integration | LangChain |
+| RAG | Retrieval-Augmented Generation |
+| Vector Database | FAISS |
+| Embeddings | Google Generative AI Embeddings |
+| Web Search | Tavily |
+| Weather API | OpenWeatherMap |
+| Stock API | Alpha Vantage |
+| Database | SQLite |
+| Frontend | Streamlit |
+| Environment Management | Python dotenv |
+
+## Project Structure
 
 ```text
 F.R.I.D.A.Y/
-├── app.py                  # Main Streamlit frontend & chat interface
-├── app_prev.py             # Previous frontend implementation backup
-├── backend.py              # LangGraph state machine, nodes, and SQLite checkpointer
-├── tools.py                # Tool definitions (RAG, Tavily, Weather, Stocks, Calculator)
-├── requirements.txt        # Python package dependencies
-├── .env.example            # Template for environment configuration
-├── .gitignore              # Files and folders ignored by Git
-├── DB/                     # Directory housing persistent SQLite chatbot state
-│   └── chatbot.db
-└── faiss_db/               # Directory housing FAISS vector database indices
-    ├── index.faiss
-    └── index.pkl
+│
+├── images/
+│   └── architecture.png
+│
+├── DB/
+│   └── chat​bot.db
+│
+├── faiss_db/
+│   ├── index.faiss
+│   └── index.pkl
+│
+├── app_rag.py
+├── backend.py
+├── tools.py
+├── requirements.txt
+├── .env
+├── .gitignore
+└── README.md
 ```
 
----
+*The structure above illustrates the main application components. Your actual repository may contain additional modules or folders.*
 
-## ⚙️ Installation & Setup
+## Getting Started
+
+Follow these steps to run F.R.I.D.A.Y locally.
 
 ### 1. Clone the Repository
+
 ```bash
-git clone https://github.com/iftiarrafi/F.R.I.D.A.Y.git
+git clone <YOUR_REPOSITORY_URL>
 cd F.R.I.D.A.Y
 ```
 
-### 2. Create and Activate a Virtual Environment
-```bash
-# Windows (PowerShell)
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+### 2. Create a Virtual Environment
 
-# Linux / macOS
-python3 -m venv venv
+```bash
+python -m venv venv
+```
+
+Activate the environment:
+
+**Windows:**
+
+```bash
+venv\Scripts\activate
+```
+
+**Linux / macOS:**
+
+```bash
 source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
----
+### 4. Configure Environment Variables
 
-## 🔑 Environment Configuration
+Create a `.env` file in the project root directory.
 
-Create a `.env` file in the root directory by copying `.env.example`:
+```env
+# LLM
+GROQ_API_KEY=your_groq_api_key
+
+# Embeddings
+GOOGLE_API_KEY=your_google_api_key
+
+# Web Search
+TAVLIY_API_KEY=your_tavily_api_key
+
+# Weather
+OPENWEATHER_API_KEY=your_openweathermap_api_key
+
+# Stock Market
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key
+```
+
+**API keys:**
+
+- Groq: https://console.groq.com/
+- Google AI Studio: https://aistudio.google.com/
+- Tavily: https://tavily.com/
+- OpenWeatherMap: https://openweathermap.org/api
+- Alpha Vantage: https://www.alphavantage.co/support/#api-key
+
+Only configure the API keys for the tools you intend to use. The Groq key is required for the language model. Google credentials are required for the Google embedding integration.
+
+### 5. Run the Application
 
 ```bash
-cp .env.example .env
+streamlit run app_rag.py
 ```
 
-Populate the keys in `.env` with your API credentials:
+Open the local URL displayed in your terminal to access F.R.I.D.A.Y.
 
-```dotenv
-# LLM Inference (Groq)
-GROQ_API_KEY="your_groq_api_key_here"
+## How to Use
 
-# Web Search (Tavily)
-TAVLIY_API_KEY="your_tavily_api_key_here"
+### General Conversations
 
-# Stock Quotes (Alpha Vantage)
-ALPHA_VANTAGE_API_KEY="your_alpha_vantage_api_key_here"
+Enter a message in the chat input. F.R.I.D.A.Y can answer general questions directly or use tools when necessary.
 
-# Real-time Weather (OpenWeatherMap)
-OPENWEATHER_API_KEY="your_openweather_api_key_here"
+### Ask Questions About PDFs
 
-# Gemini Embeddings (Google AI Studio)
-GOOGLE_API_KEY="your_google_ai_studio_api_key_here"
+1. Upload a PDF document through the application.
+2. Wait for the document processing to complete.
+3. Ask questions related to the uploaded document.
+4. The agent retrieves relevant content and generates a context-aware answer.
 
-# Optional: LangSmith Tracing & Telemetry
-LANGSMITH_TRACING=true
-LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
-LANGSMITH_API_KEY="your_langsmith_api_key_here"
-LANGSMITH_PROJECT="friday-agent"
+### Use External Tools
+
+You can also ask questions that require external information or calculations.
+
+Examples:
+
+```text
+Search for the latest developments in artificial intelligence.
+
+What is the current weather in Dhaka?
+
+What is the latest stock price of AAPL?
+
+Calculate the compound interest on 10000 at 8% for 5 years.
+
+Summarize the main findings from my uploaded PDF.
 ```
 
-> [!NOTE]
-> Ensure `TAVLIY_API_KEY` matches the exact spelling in `.env` as referenced by the Tavily search tool in `tools.py`.
+### Manage Conversations
+
+- Click **New Chat** to start a new conversation.
+- Select a previous conversation from the sidebar to continue it.
+- Conversation state is maintained through SQLite checkpointing.
+
+## Environment & Configuration Notes
+
+- Keep your `.env` file private and never commit API keys to GitHub.
+- SQLite checkpoint data is stored locally in the `DB/` directory.
+- Uploaded PDF files are temporarily stored for processing and removed afterward by the application.
+- FAISS index files are used for document retrieval; their persistence depends on the configured indexing implementation.
+- External tools depend on their respective API availability and credentials.
+
+## Future Improvements
+
+- Support multiple PDF documents and more advanced document management.
+- Improve retrieval quality with hybrid search and reranking.
+- Add source citations and page-level references to PDF answers.
+- Introduce authentication and user-specific conversation storage.
+- Improve error handling and API rate-limit management.
+- Deploy the application with persistent storage.
+
+## Demo
+
+<p align="center">
+  <a href="https://youtu.be/c8cNnl3ZWiA">
+    <img src="https://img.youtube.com/vi/c8cNnl3ZWiA/maxresdefault.jpg" alt="F.R.I.D.A.Y Demo Video" width="80%" />
+  </a>
+  <br />
+  <a href="https://youtu.be/c8cNnl3ZWiA">Watch F.R.I.D.A.Y in Action</a>
+</p>
+
+## Author
+
+**Md. Iftiar Rafi**
+
+- GitHub: https://github.com/iftiarrafi
+- Email: iftiarrafi@gmail.com
 
 ---
 
-## 🚀 Running the Application
-
-Launch the Streamlit web application:
-
-```bash
-streamlit run app.py
-```
-
-Once running, navigate to the local URL displayed in your terminal (typically `http://localhost:8501`).
-
----
-
-## 💬 Example Queries to Try
-
-| Category | Example Prompt | Active Tool |
-| :--- | :--- | :--- |
-| **Document Q&A** | *Upload a research paper or PDF and ask:* `"Summarize the key findings in section 3."` | `rag_tool` |
-| **Web Research** | `"What are the latest developments in generative AI announced this week?"` | `search_tool` (Tavily) |
-| **Financials** | `"What is the current stock price and trading volume for NVDA?"` | `get_stock_price` |
-| **Weather** | `"What is the weather like in Tokyo right now?"` | `get_current_weather` |
-| **Calculations** | `"Calculate math.sqrt(144) * 15 + round(3.14159, 2)"` | `calculator` |
-| **General Chat** | `"Can you explain the difference between zero-shot and few-shot prompting?"` | Direct LLM Response |
-
----
-
-## 🛠️ Technology Stack
-
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Orchestration** | [LangGraph](https://github.com/langchain-ai/langgraph) | Cyclic state graph workflow & tool binding |
-| **LLM Inference** | [ChatGroq](https://groq.com/) | Ultra-low latency open-weights models (`openai/gpt-oss-120b`) |
-| **Embeddings** | [Google Generative AI](https://ai.google.dev/) | `gemini-embedding-2-preview` semantic vector embeddings |
-| **Vector Index** | [FAISS (Facebook AI)](https://github.com/facebookresearch/faiss) | High-speed similarity search for retrieved chunks |
-| **Web UI** | [Streamlit](https://streamlit.io/) | Interactive chat application with streaming responses |
-| **Storage / State** | SQLite (`SqliteSaver`) | Checkpointed multi-thread message history |
-| **Live APIs** | Tavily, Alpha Vantage, OpenWeather | Real-time external data sources |
-
----
-## 📜 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
+<p align="center">
+  Built with Python, LangGraph, LangChain, and Groq.
+</p>
